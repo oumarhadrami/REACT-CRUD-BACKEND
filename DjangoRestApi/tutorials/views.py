@@ -7,7 +7,9 @@ from rest_framework import status
 from tutorials.models import Tutorial
 from tutorials.serializers import TutorialSerializer
 from rest_framework.decorators import api_view
-
+from rest_framework.viewsets import ModelViewSet
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 @api_view(['GET', 'POST', 'DELETE'])
 def tutorial_list(request):
@@ -67,3 +69,11 @@ def tutorial_list_published(request):
         tutorials_serializer = TutorialSerializer(tutorials, many=True)
         return JsonResponse(tutorials_serializer.data, safe=False)
     
+
+
+class TutorialsView(ModelViewSet):  
+    queryset = Tutorial.objects.all()
+    serializer_class = TutorialSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['published','description', 'title']
+    search_fields = ['published', 'description', 'title']
